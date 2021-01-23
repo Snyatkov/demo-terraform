@@ -1,0 +1,1 @@
+repository for AWS demo stand create by terraform
