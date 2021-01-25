@@ -9,3 +9,6 @@ output "lb_dns_name" {
 output "lb_zone_id" {
   value = aws_lb.ALB_for_demo_site.zone_id
 }
+output "tg_for_demo_lambda" {
+  value = aws_lb_target_group.tg_for_demo_lambda.arn
+}

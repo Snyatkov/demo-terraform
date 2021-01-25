@@ -15,6 +15,17 @@ resource "aws_lb_target_group" "TG_for_demo_site" {
   }
 }
 
+resource "aws_lb_target_group" "tg_for_demo_lambda" {
+  name        = "tg-for-demo-lambda"
+  vpc_id      = var.vpc_id
+  target_type = "lambda"
+}
+
+resource "aws_lb_target_group_attachment" "tg-attachement-for-demo-lambda" {
+  target_group_arn = aws_lb_target_group.tg_for_demo_lambda.arn
+  target_id        = var.lambda_arn
+}
+
 resource "aws_lb" "ALB_for_demo_site" {
   name               = "alb-for-demo-site"
   internal           = false
@@ -58,16 +69,16 @@ resource "aws_lb_listener" "LB_listener_for_demo_site_443" {
 }
 
 resource "aws_lb_listener_rule" "Rule_LB_listener" {
-  listener_arn = aws_lb_listener.LB_listener_for_demo_site.arn
+  listener_arn = aws_lb_listener.LB_listener_for_demo_site_443.arn
   priority     = 100
   condition {
     host_header {
-      values = ["ec2.snyatkov.site"]
+      values = ["lambda.snyatkov.site"]
     }
   }
 
   action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.TG_for_demo_site.arn
+    target_group_arn = aws_lb_target_group.tg_for_demo_lambda.arn
   }
 }

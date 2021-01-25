@@ -52,6 +52,7 @@ module "lb" {
   vpc_id          = module.vpc.vpc_id
   lb_security_id  = [module.sg.lb_security_id]
   certificate_arn = data.aws_acm_certificate.issued.arn
+  lambda_arn      = module.lambda.lambda_arn
 }
 
 #----------------Create launch conf and autoscaling_group--------
@@ -87,4 +88,17 @@ module "r53" {
   lb_zone_id  = module.lb.lb_zone_id
   for_each    = toset(["ec2.snyatkov.site", "docker.snyatkov.site", "elb.snyatkov.site", "lambda.snyatkov.site"])
   record_name = each.key
+}
+
+#--------------Create CodePipeline------------------------------
+/*module "codepl" {
+  source       = "./pipeline"
+  ELB_name     = "ELB_demo"
+  ELB_env_type = "64bit Amazon Linux 2 v3.1.4 running PHP 7.4"
+}*/
+
+#--------------Create Lambda function---------------------------
+module "lambda" {
+  source             = "./lambda"
+  tg_for_demo_lambda = module.lb.tg_for_demo_lambda
 }
