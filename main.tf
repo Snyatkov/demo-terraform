@@ -317,3 +317,12 @@ resource "aws_security_group" "EC2_security" {
   }
 }
 */
+
+#---------------Manage route 53------------------------------
+module "r53" {
+  source      = "./r53"
+  r53_id      = "Z02027932QK6EFEPPT3W2"
+  lb_dns_name = module.lb.lb_dns_name
+  lb_zone_id  = module.lb.lb_zone_id
+  record_name = "ec2.snyatkov.site"
+}
