@@ -9,6 +9,14 @@
 
 provider "aws" {}
 
+terraform {
+  backend "s3" {
+    bucket = "demo-site-bucket-state"
+    key    = "terraform.tfstate"
+    region = "eu-north-1"
+  }
+}
+
 #----------get data from AWS---------------------
 data "aws_ami" "Amazon_linux" {
   most_recent = true
@@ -36,10 +44,17 @@ data "aws_acm_certificate" "issued" {
 /*output "aws_acm_certificate" {
   value = data.aws_acm_certificate.issued.arn
 }*/
-#----------------Create environments for ALB---------------------
+#----------------Create Application load balancer---------------
 
+module "lb" {
+  source          = "./lb"
+  subnets         = [module.vpc.subnet_1, module.vpc.subnet_2]
+  vpc_id          = module.vpc.vpc_id
+  lb_security_id  = [module.sg.lb_security_id]
+  certificate_arn = data.aws_acm_certificate.issued.arn
+}
 
-resource "aws_lb_target_group" "TG_for_demo_site" {
+/*resource "aws_lb_target_group" "TG_for_demo_site" {
   name     = "tg-for-demo-site"
   port     = 80
   protocol = "HTTP"
@@ -112,10 +127,19 @@ resource "aws_lb_listener_rule" "Rule_LB_listener" {
     target_group_arn = aws_lb_target_group.TG_for_demo_site.arn
   }
 }
+*/
+#----------------Create instanes-------------------------------
 
+#----------------Create launch conf and autoscaling_group--------
+module "instance" {
+  source          = "./instance"
+  ami_id          = data.aws_ami.Amazon_linux.id
+  ec2_security_id = [module.sg.ec2_security_id]
+  subnets         = [module.vpc.subnet_1, module.vpc.subnet_2]
+  lb_tg_arn       = [module.lb.lb_tg_arn]
+}
 
-
-resource "aws_launch_configuration" "LC_for_ALB" {
+/*resource "aws_launch_configuration" "LC_for_ALB" {
   name_prefix     = "EC2-LC-Demo-site-"
   image_id        = data.aws_ami.Amazon_linux.id
   instance_type   = "t3.micro"
@@ -157,12 +181,75 @@ resource "aws_autoscaling_group" "ASG_for_ALB" {
     }
 
   }
+}*/
+#-------- create VPC and subnet--------------------
+
+#----------------Create VPC-------------------------------------
+module "vpc" {
+  source             = "./vpc"
+  vpc_cidr           = "10.0.0.0/16"
+  vpc_availible_zone = [data.aws_availability_zones.available.names[0], data.aws_availability_zones.available.names[1]]
+}
+/*resource "aws_vpc" "Demo_site_vpc" {
+  cidr_block       = "10.0.0.0/16"
+  instance_tenancy = "default"
+
+  tags = {
+    Name    = "Demo_site_vpc"
+    Project = "Demo-site"
+    Owner   = "Snyatkov_V"
+  }
 }
 
+resource "aws_route" "add_route_to_IGT" {
+  route_table_id         = aws_vpc.Demo_site_vpc.main_route_table_id
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id             = aws_internet_gateway.IGW_for_demo_site.id
+}
 
+resource "aws_internet_gateway" "IGW_for_demo_site" {
+  vpc_id = aws_vpc.Demo_site_vpc.id
+
+  tags = {
+    Name    = "IGW_for_demo_site"
+    Project = "Demo-site"
+    Owner   = "Snyatkov_V"
+  }
+}
+
+resource "aws_subnet" "Demo_site_subnet_1" {
+  vpc_id                  = aws_vpc.Demo_site_vpc.id
+  cidr_block              = "10.0.1.0/24"
+  availability_zone       = data.aws_availability_zones.available.names[0]
+  map_public_ip_on_launch = "true"
+  tags = {
+    Name    = "Demo_site_subnet_1"
+    Project = "Demo-site"
+    Owner   = "Snyatkov_V"
+  }
+}
+
+resource "aws_subnet" "Demo_site_subnet_2" {
+  vpc_id                  = aws_vpc.Demo_site_vpc.id
+  cidr_block              = "10.0.2.0/24"
+  availability_zone       = data.aws_availability_zones.available.names[1]
+  map_public_ip_on_launch = "true"
+  tags = {
+    Name    = "Demo_site_subnet_2"
+    Project = "Demo-site"
+    Owner   = "Snyatkov_V"
+  }
+}
+*/
 #--------------Security groups--------------------------
+#----------------Create Security groups--------
+module "sg" {
+  source   = "./sg"
+  vpc_cidr = [module.vpc.vpc_cidr]
+  vpc_id   = module.vpc.vpc_id
+}
 
-resource "aws_security_group" "SG_for_ALB" {
+/*resource "aws_security_group" "SG_for_ALB" {
   name   = "SG_for_ALB"
   vpc_id = aws_vpc.Demo_site_vpc.id
   ingress {
@@ -229,56 +316,4 @@ resource "aws_security_group" "EC2_security" {
     Owner   = "Snyatkov_V"
   }
 }
-
-#-------- create VPC and subnet--------------------
-
-resource "aws_vpc" "Demo_site_vpc" {
-  cidr_block       = "10.0.0.0/16"
-  instance_tenancy = "default"
-
-  tags = {
-    Name    = "Demo_site_vpc"
-    Project = "Demo-site"
-    Owner   = "Snyatkov_V"
-  }
-}
-
-resource "aws_route" "add_route_to_IGT" {
-  route_table_id         = aws_vpc.Demo_site_vpc.main_route_table_id
-  destination_cidr_block = "0.0.0.0/0"
-  gateway_id             = aws_internet_gateway.IGW_for_demo_site.id
-}
-
-resource "aws_internet_gateway" "IGW_for_demo_site" {
-  vpc_id = aws_vpc.Demo_site_vpc.id
-
-  tags = {
-    Name    = "IGW_for_demo_site"
-    Project = "Demo-site"
-    Owner   = "Snyatkov_V"
-  }
-}
-
-resource "aws_subnet" "Demo_site_subnet_1" {
-  vpc_id                  = aws_vpc.Demo_site_vpc.id
-  cidr_block              = "10.0.1.0/24"
-  availability_zone       = data.aws_availability_zones.available.names[0]
-  map_public_ip_on_launch = "true"
-  tags = {
-    Name    = "Demo_site_subnet_1"
-    Project = "Demo-site"
-    Owner   = "Snyatkov_V"
-  }
-}
-
-resource "aws_subnet" "Demo_site_subnet_2" {
-  vpc_id                  = aws_vpc.Demo_site_vpc.id
-  cidr_block              = "10.0.2.0/24"
-  availability_zone       = data.aws_availability_zones.available.names[1]
-  map_public_ip_on_launch = "true"
-  tags = {
-    Name    = "Demo_site_subnet_2"
-    Project = "Demo-site"
-    Owner   = "Snyatkov_V"
-  }
-}
+*/
