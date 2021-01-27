@@ -31,6 +31,19 @@ data "aws_ami" "Amazon_linux" {
   }
 }
 
+data "aws_ami" "Amazon_ecs" {
+  most_recent = true
+  owners      = ["amazon"]
+  filter {
+    name   = "name"
+    values = ["amzn-ami*amazon-ecs-optimized"]
+  }
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+}
+
 data "aws_availability_zones" "available" {
   state = "available"
 }
@@ -47,12 +60,13 @@ data "aws_acm_certificate" "issued" {
 #----------------Create Application load balancer---------------
 
 module "lb" {
-  source          = "./lb"
-  subnets         = [module.vpc.subnet_1, module.vpc.subnet_2]
-  vpc_id          = module.vpc.vpc_id
-  lb_security_id  = [module.sg.lb_security_id]
-  certificate_arn = data.aws_acm_certificate.issued.arn
-  lambda_arn      = module.lambda.lambda_arn
+  source            = "./lb"
+  subnets           = [module.vpc.subnet_1, module.vpc.subnet_2]
+  vpc_id            = module.vpc.vpc_id
+  lb_security_id    = [module.sg.lb_security_id]
+  certificate_arn   = data.aws_acm_certificate.issued.arn
+  lambda_arn        = module.lambda.lambda_arn
+  lambda_permission = module.lambda.lambda_permission
 }
 
 #----------------Create launch conf and autoscaling_group--------
@@ -90,15 +104,18 @@ module "r53" {
   record_name = each.key
 }
 
-#--------------Create CodePipeline------------------------------
-/*module "codepl" {
-  source       = "./pipeline"
-  ELB_name     = "ELB_demo"
-  ELB_env_type = "64bit Amazon Linux 2 v3.1.4 running PHP 7.4"
-}*/
 
 #--------------Create Lambda function---------------------------
 module "lambda" {
   source             = "./lambda"
   tg_for_demo_lambda = module.lb.tg_for_demo_lambda
+}
+
+#--------------Create ECS---------------------------
+module "ecs" {
+  source          = "./ecs"
+  subnets         = [module.vpc.subnet_1, module.vpc.subnet_2]
+  ecs_security_id = [module.sg.ecs_security_id]
+  tg_for_ecs      = module.lb.tg_for_ecs
+  lb_listener_443 = module.lb.lb_listener_443
 }

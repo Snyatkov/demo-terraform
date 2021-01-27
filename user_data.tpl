@@ -7,7 +7,8 @@ cat <<EOF > /var/www/html/index.html
 <h2>WebServer EC2 with local IP: $myip</h2><br>
 Build by Terraform<br>
 Made by: ${Owner}<br>
-For project: ${Project}
+For project: ${Project}<br>
+Version: 1.0
 </html>
 EOF
 sudo service httpd start

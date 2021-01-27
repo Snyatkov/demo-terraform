@@ -3,7 +3,6 @@ variable "ami_id" {}
 variable "ec2_security_id" {
   type = list(any)
 }
-
 variable "subnets" {
   type = list(any)
 }

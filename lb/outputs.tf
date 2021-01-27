@@ -12,3 +12,10 @@ output "lb_zone_id" {
 output "tg_for_demo_lambda" {
   value = aws_lb_target_group.tg_for_demo_lambda.arn
 }
+output "tg_for_ecs" {
+  value = aws_lb_target_group.tg_for_ecs.arn
+}
+
+output "lb_listener_443" {
+  value = aws_lb_listener.LB_listener_for_demo_site_443
+}
