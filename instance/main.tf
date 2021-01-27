@@ -73,6 +73,7 @@ resource "aws_cloudwatch_metric_alarm" "ASG_demo_site_cpu_alarm_up" {
   alarm_description = "This metric monitor EC2 instance CPU utilization"
   alarm_actions     = [aws_autoscaling_policy.ASG_demo_site_policy_up.arn]
 }
+
 resource "aws_autoscaling_policy" "ASG_demo_site_policy_down" {
   name                   = "ASG_demo_site_policy_down"
   scaling_adjustment     = -1

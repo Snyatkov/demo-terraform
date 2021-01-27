@@ -29,12 +29,10 @@ resource "aws_ecs_task_definition" "ecs_service" {
   memory                   = 512
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
   requires_compatibilities = ["FARGATE"]
-  #container_definitions    = file("container-definitions/container.json")
   container_definitions = jsonencode([{
     name      = "demo-ecs"
     image     = "984547102228.dkr.ecr.eu-north-1.amazonaws.com/demo1:v2"
     essential = true
-    #environment = var.container_environment
     portMappings = [{
       protocol      = "tcp"
       containerPort = 80

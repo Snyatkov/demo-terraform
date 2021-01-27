@@ -4,7 +4,6 @@ output "vpc_cidr" {
 output "vpc_id" {
   value = aws_vpc.Demo_site_vpc.id
 }
-
 output "subnet_1" {
   value = aws_subnet.Demo_site_subnet_1.id
 }

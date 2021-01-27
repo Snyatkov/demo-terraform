@@ -15,17 +15,18 @@ resource "aws_lb_target_group" "TG_for_demo_site" {
     unhealthy_threshold = 2
   }
 }
+
 #---TG for lambda
-resource "aws_lb_target_group" "tg_for_demo_lambda" {
-  name                 = "tg-for-demo-lambda"
+resource "aws_lb_target_group" "TG_for_demo_lambda" {
+  name                 = "TG-for-demo-lambda"
   vpc_id               = var.vpc_id
   target_type          = "lambda"
   deregistration_delay = 10
 }
 
 #---TG for ECS
-resource "aws_lb_target_group" "tg_for_ecs" {
-  name                 = "tg-for-ecs"
+resource "aws_lb_target_group" "TG_for_ecs" {
+  name                 = "TG-for-ecs"
   port                 = 80
   protocol             = "HTTP"
   vpc_id               = var.vpc_id
@@ -42,8 +43,8 @@ resource "aws_lb_target_group" "tg_for_ecs" {
   }
 }
 
-resource "aws_lb_target_group_attachment" "tg-attachement-for-demo-lambda" {
-  target_group_arn = aws_lb_target_group.tg_for_demo_lambda.arn
+resource "aws_lb_target_group_attachment" "TG-attachement-for-demo-lambda" {
+  target_group_arn = aws_lb_target_group.TG_for_demo_lambda.arn
   target_id        = var.lambda_arn
   depends_on       = [var.lambda_permission]
 }
@@ -101,7 +102,7 @@ resource "aws_lb_listener_rule" "Rule_LB_listener" {
 
   action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.tg_for_demo_lambda.arn
+    target_group_arn = aws_lb_target_group.TG_for_demo_lambda.arn
   }
 }
 
@@ -116,6 +117,6 @@ resource "aws_lb_listener_rule" "Rule_LB_listener_ecs" {
 
   action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.tg_for_ecs.arn
+    target_group_arn = aws_lb_target_group.TG_for_ecs.arn
   }
 }

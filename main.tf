@@ -53,12 +53,7 @@ data "aws_acm_certificate" "issued" {
   statuses = ["ISSUED"]
 }
 
-#----------------output-----------------------------------------
-/*output "aws_acm_certificate" {
-  value = data.aws_acm_certificate.issued.arn
-}*/
 #----------------Create Application load balancer---------------
-
 module "lb" {
   source            = "./lb"
   subnets           = [module.vpc.subnet_1, module.vpc.subnet_2]
@@ -78,7 +73,6 @@ module "instance" {
   lb_tg_arn       = [module.lb.lb_tg_arn]
 }
 
-
 #----------------Create VPC-------------------------------------
 module "vpc" {
   source             = "./vpc"
@@ -86,7 +80,7 @@ module "vpc" {
   vpc_availible_zone = [data.aws_availability_zones.available.names[0], data.aws_availability_zones.available.names[1]]
 }
 
-#----------------Create Security groups--------
+#----------------Create Security groups------------------------
 module "sg" {
   source   = "./sg"
   vpc_cidr = [module.vpc.vpc_cidr]
@@ -94,7 +88,7 @@ module "sg" {
 }
 
 
-#---------------Manage route 53------------------------------
+#---------------Manage route 53-------------------------------
 module "r53" {
   source      = "./r53"
   r53_id      = "Z02027932QK6EFEPPT3W2"
@@ -104,14 +98,13 @@ module "r53" {
   record_name = each.key
 }
 
-
 #--------------Create Lambda function---------------------------
 module "lambda" {
   source             = "./lambda"
   tg_for_demo_lambda = module.lb.tg_for_demo_lambda
 }
 
-#--------------Create ECS---------------------------
+#--------------Create ECS--------------------------------------
 module "ecs" {
   source          = "./ecs"
   subnets         = [module.vpc.subnet_1, module.vpc.subnet_2]

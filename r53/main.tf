@@ -1,3 +1,4 @@
+#---Add record to ALB
 resource "aws_route53_record" "ec2" {
   zone_id = var.r53_id
   name    = var.record_name

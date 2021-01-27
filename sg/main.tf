@@ -57,6 +57,7 @@ resource "aws_security_group" "SG_for_EC2_instances" {
     Owner       = "Snyatkov_V"
   }
 }
+
 #---SG for ecs instance
 resource "aws_security_group" "SG_for_ecs" {
   name   = "allow-all-ec2-ecs"
