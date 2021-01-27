@@ -31,8 +31,8 @@ resource "aws_security_group" "SG_for_ALB" {
 
 #---SG for EC2 instance demo-site
 resource "aws_security_group" "SG_for_EC2_instances" {
-  name        = "SG_port_80_8881_22"
-  description = "Allow inbound traffic to 80, 22, 8881 ports"
+  name        = "SG_port_80"
+  description = "Allow inbound traffic to 80 port"
   vpc_id      = var.vpc_id
 
   ingress {
@@ -43,22 +43,6 @@ resource "aws_security_group" "SG_for_EC2_instances" {
     cidr_blocks = var.vpc_cidr
   }
 
-  ingress {
-    description = "8881 from VPC"
-    from_port   = 8881
-    to_port     = 8881
-    protocol    = "tcp"
-    cidr_blocks = var.vpc_cidr
-  }
-
-  ingress {
-    description = "22 from VPC"
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
   egress {
     from_port   = 0
     to_port     = 0
@@ -67,7 +51,7 @@ resource "aws_security_group" "SG_for_EC2_instances" {
   }
 
   tags = {
-    Name        = "SG ports 80 22 8881"
+    Name        = "SG ports 80"
     Environment = "Production"
     Project     = "Demo-site"
     Owner       = "Snyatkov_V"
@@ -78,10 +62,10 @@ resource "aws_security_group" "SG_for_ecs" {
   name   = "allow-all-ec2-ecs"
   vpc_id = var.vpc_id
   ingress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    from_port       = 80
+    to_port         = 80
+    protocol        = "tcp"
+    security_groups = [aws_security_group.SG_for_ALB.id]
   }
   egress {
     from_port   = 0

@@ -10,23 +10,6 @@ resource "aws_vpc" "Demo_site_vpc" {
   }
 }
 
-resource "aws_route" "add_route_to_IGT" {
-  route_table_id         = aws_vpc.Demo_site_vpc.main_route_table_id
-  destination_cidr_block = "0.0.0.0/0"
-  gateway_id             = aws_internet_gateway.IGW_for_demo_site_vpc.id
-}
-
-resource "aws_internet_gateway" "IGW_for_demo_site_vpc" {
-  vpc_id = aws_vpc.Demo_site_vpc.id
-
-  tags = {
-    Name        = "IGW_for_demo_site"
-    Environment = "Production"
-    Project     = "Demo-site"
-    Owner       = "Snyatkov_V"
-  }
-}
-
 resource "aws_subnet" "Demo_site_subnet_1" {
   vpc_id                  = aws_vpc.Demo_site_vpc.id
   cidr_block              = "10.0.1.0/24"
@@ -51,4 +34,21 @@ resource "aws_subnet" "Demo_site_subnet_2" {
     Project     = "Demo-site"
     Owner       = "Snyatkov_V"
   }
+}
+
+resource "aws_internet_gateway" "IGW_for_demo_site_vpc" {
+  vpc_id = aws_vpc.Demo_site_vpc.id
+
+  tags = {
+    Name        = "IGW_for_demo_site"
+    Environment = "Production"
+    Project     = "Demo-site"
+    Owner       = "Snyatkov_V"
+  }
+}
+
+resource "aws_route" "add_route_to_IGT" {
+  route_table_id         = aws_vpc.Demo_site_vpc.main_route_table_id
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id             = aws_internet_gateway.IGW_for_demo_site_vpc.id
 }

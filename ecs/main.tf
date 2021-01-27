@@ -32,7 +32,7 @@ resource "aws_ecs_task_definition" "ecs_service" {
   #container_definitions    = file("container-definitions/container.json")
   container_definitions = jsonencode([{
     name      = "demo-ecs"
-    image     = "984547102228.dkr.ecr.eu-north-1.amazonaws.com/demo1:v1"
+    image     = "984547102228.dkr.ecr.eu-north-1.amazonaws.com/demo1:v2"
     essential = true
     #environment = var.container_environment
     portMappings = [{

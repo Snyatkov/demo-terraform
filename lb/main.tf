@@ -17,19 +17,20 @@ resource "aws_lb_target_group" "TG_for_demo_site" {
 }
 #---TG for lambda
 resource "aws_lb_target_group" "tg_for_demo_lambda" {
-  name        = "tg-for-demo-lambda"
-  vpc_id      = var.vpc_id
-  target_type = "lambda"
+  name                 = "tg-for-demo-lambda"
+  vpc_id               = var.vpc_id
+  target_type          = "lambda"
+  deregistration_delay = 10
 }
 
 #---TG for ECS
 resource "aws_lb_target_group" "tg_for_ecs" {
-  name        = "tg-for-ecs"
-  port        = 80
-  protocol    = "HTTP"
-  vpc_id      = var.vpc_id
-  target_type = "ip"
-
+  name                 = "tg-for-ecs"
+  port                 = 80
+  protocol             = "HTTP"
+  vpc_id               = var.vpc_id
+  target_type          = "ip"
+  deregistration_delay = 10
   health_check {
     healthy_threshold   = "3"
     interval            = "90"
