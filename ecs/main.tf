@@ -47,12 +47,7 @@ resource "aws_ecs_task_definition" "ecs_service" {
       hostPort      = 80
     }]
   }])
-  tags = {
-    Name        = "ECS_task_for_demo"
-    Owner       = "Snyatkov_V"
-    Environment = "Production"
-    Project     = "Demo-ecs"
-  }
+  tags = merge(var.common_tags, { Name = "${var.common_tags["Environment"]} ECS task for demo ECS" })
 }
 
 resource "aws_ecs_service" "demo_ecs_service" {
@@ -75,25 +70,15 @@ resource "aws_ecs_service" "demo_ecs_service" {
   }
 
   depends_on = [var.lb_listener_443, aws_iam_role_policy_attachment.ecs_task_execution_role]
-
-  tags = {
-    Name        = "ECS_service_for_demo"
-    Owner       = "Snyatkov_V"
-    Environment = "Production"
-    Project     = "Demo-ecs"
-  }
+  tags       = merge(var.common_tags, { Name = "${var.common_tags["Environment"]} ECS service for demo ECS" })
 }
 
 resource "aws_ecs_cluster" "demo_ecs" {
   name = "demo_ecs"
+  tags = merge(var.common_tags, { Name = "${var.common_tags["Environment"]} ECS cluster for demo ECS" })
 }
 
 resource "aws_cloudwatch_log_group" "demo_ecs_cloudwatch" {
   name = "demo_ecs_cloudwatch"
-  tags = {
-    Name        = "Cloudwatch_for_demo_ecs"
-    Owner       = "Snyatkov_V"
-    Environment = "Production"
-    Project     = "Demo-ecs"
-  }
+  tags = merge(var.common_tags, { Name = "${var.common_tags["Environment"]} cloudwatch for demo ECS" })
 }

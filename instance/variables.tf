@@ -9,3 +9,6 @@ variable "subnets" {
 variable "lb_tg_arn" {
   type = list(any)
 }
+variable "common_tags" {
+  type = map(any)
+}

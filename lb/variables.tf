@@ -8,3 +8,6 @@ variable "lb_security_id" {
 variable "certificate_arn" {}
 variable "lambda_arn" {}
 variable "lambda_permission" {}
+variable "common_tags" {
+  type = map(any)
+}

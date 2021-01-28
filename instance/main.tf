@@ -16,7 +16,7 @@ resource "aws_autoscaling_group" "ASG_for_ALB" {
   launch_configuration      = aws_launch_configuration.LC_for_ALB.name
   min_size                  = 2
   max_size                  = 4
-  desired_capacity          = 3
+  desired_capacity          = 2
   health_check_type         = "ELB"
   vpc_zone_identifier       = var.subnets
   target_group_arns         = var.lb_tg_arn
@@ -34,10 +34,10 @@ resource "aws_autoscaling_group" "ASG_for_ALB" {
   }
   dynamic "tag" {
     for_each = {
-      Name        = "EC2_for_demo_site"
+      Name        = "EC2 for demo"
       Owner       = "Snyatkov_V"
       Environment = "Production"
-      Project     = "Demo-site"
+      Project     = "Demo"
     }
     content {
       key                 = tag.key

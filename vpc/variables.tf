@@ -4,3 +4,6 @@ variable "vpc_cidr" {
 variable "vpc_availible_zone" {
   type = list(any)
 }
+variable "common_tags" {
+  type = map(any)
+}

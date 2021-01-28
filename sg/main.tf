@@ -1,7 +1,7 @@
 #---SG for Aplication load balancer
 resource "aws_security_group" "SG_for_ALB" {
-  name   = "SG_for_ALB"
-  vpc_id = var.vpc_id
+  name_prefix = "SG_for_ALB"
+  vpc_id      = var.vpc_id
   ingress {
     from_port   = 80
     to_port     = 80
@@ -21,18 +21,12 @@ resource "aws_security_group" "SG_for_ALB" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  tags = {
-    Name        = "SG for ALB"
-    Environment = "Production"
-    Project     = "Demo-site"
-    Owner       = "Snyatkov_V"
-  }
+  tags = merge(var.common_tags, { Name = "${var.common_tags["Environment"]} SG for ALB" })
 }
 
 #---SG for EC2 instance demo-site
 resource "aws_security_group" "SG_for_EC2_instances" {
-  name        = "SG_port_80"
-  description = "Allow inbound traffic to 80 port"
+  name_prefix = "SG_for_EC2_instances"
   vpc_id      = var.vpc_id
 
   ingress {
@@ -49,19 +43,13 @@ resource "aws_security_group" "SG_for_EC2_instances" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
-  tags = {
-    Name        = "SG ports 80"
-    Environment = "Production"
-    Project     = "Demo-site"
-    Owner       = "Snyatkov_V"
-  }
+  tags = merge(var.common_tags, { Name = "${var.common_tags["Environment"]} SG for EC2 instances" })
 }
 
 #---SG for ecs instance
 resource "aws_security_group" "SG_for_ecs" {
-  name   = "allow-all-ec2-ecs"
-  vpc_id = var.vpc_id
+  name_prefix = "SG_for_ecs"
+  vpc_id      = var.vpc_id
   ingress {
     from_port   = 80
     to_port     = 80
@@ -74,11 +62,5 @@ resource "aws_security_group" "SG_for_ecs" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
-  tags = {
-    Name        = "SG all port for ecs"
-    Environment = "Production"
-    Project     = "Demo-ECS"
-    Owner       = "Snyatkov_V"
-  }
+  tags = merge(var.common_tags, { Name = "${var.common_tags["Environment"]} SG for ECS" })
 }

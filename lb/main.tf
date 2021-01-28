@@ -1,6 +1,6 @@
 #---TG for EC2 Demo-site
 resource "aws_lb_target_group" "TG_for_demo_site" {
-  name                 = "tg-for-demo-site"
+  name                 = "TG-for-demo-site"
   port                 = 80
   protocol             = "HTTP"
   vpc_id               = var.vpc_id
@@ -14,6 +14,7 @@ resource "aws_lb_target_group" "TG_for_demo_site" {
     healthy_threshold   = 2
     unhealthy_threshold = 2
   }
+  tags = merge(var.common_tags, { Name = "${var.common_tags["Environment"]} TG for EC2" })
 }
 
 #---TG for lambda
@@ -22,6 +23,7 @@ resource "aws_lb_target_group" "TG_for_demo_lambda" {
   vpc_id               = var.vpc_id
   target_type          = "lambda"
   deregistration_delay = 10
+  tags                 = merge(var.common_tags, { Name = "${var.common_tags["Environment"]} TG for lambda" })
 }
 
 #---TG for ECS
@@ -41,6 +43,7 @@ resource "aws_lb_target_group" "TG_for_ecs" {
     path                = "/"
     unhealthy_threshold = "2"
   }
+  tags = merge(var.common_tags, { Name = "${var.common_tags["Environment"]} TG for ECS" })
 }
 
 resource "aws_lb_target_group_attachment" "TG-attachement-for-demo-lambda" {
@@ -55,11 +58,7 @@ resource "aws_lb" "ALB_for_demo_site" {
   load_balancer_type = "application"
   security_groups    = var.lb_security_id
   subnets            = var.subnets
-  tags = {
-    Name    = "ALB for demo site"
-    Project = "Demo-site"
-    Owner   = "Snyatkov_V"
-  }
+  tags               = merge(var.common_tags, { Name = "${var.common_tags["Environment"]} ALB for demo" })
 }
 
 resource "aws_lb_listener" "LB_listener_for_demo_site" {

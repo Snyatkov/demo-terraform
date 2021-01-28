@@ -62,6 +62,7 @@ module "lb" {
   certificate_arn   = data.aws_acm_certificate.issued.arn
   lambda_arn        = module.lambda.lambda_arn
   lambda_permission = module.lambda.lambda_permission
+  common_tags       = var.common_tags
 }
 
 #----------------Create launch conf and autoscaling_group--------
@@ -71,6 +72,7 @@ module "instance" {
   ec2_security_id = [module.sg.ec2_security_id]
   subnets         = [module.vpc.subnet_1, module.vpc.subnet_2]
   lb_tg_arn       = [module.lb.lb_tg_arn]
+  common_tags     = var.common_tags
 }
 
 #----------------Create VPC-------------------------------------
@@ -78,13 +80,15 @@ module "vpc" {
   source             = "./vpc"
   vpc_cidr           = "10.0.0.0/16"
   vpc_availible_zone = [data.aws_availability_zones.available.names[0], data.aws_availability_zones.available.names[1]]
+  common_tags        = var.common_tags
 }
 
 #----------------Create Security groups------------------------
 module "sg" {
-  source   = "./sg"
-  vpc_cidr = [module.vpc.vpc_cidr]
-  vpc_id   = module.vpc.vpc_id
+  source      = "./sg"
+  vpc_cidr    = [module.vpc.vpc_cidr]
+  vpc_id      = module.vpc.vpc_id
+  common_tags = var.common_tags
 }
 
 
@@ -111,4 +115,5 @@ module "ecs" {
   ecs_security_id = [module.sg.ecs_security_id]
   tg_for_ecs      = module.lb.tg_for_ecs
   lb_listener_443 = module.lb.lb_listener_443
+  common_tags     = var.common_tags
 }
