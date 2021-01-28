@@ -94,7 +94,7 @@ module "r53" {
   r53_id      = "Z02027932QK6EFEPPT3W2"
   lb_dns_name = module.lb.lb_dns_name
   lb_zone_id  = module.lb.lb_zone_id
-  for_each    = toset(["ec2.snyatkov.site", "docker.snyatkov.site", "elb.snyatkov.site", "lambda.snyatkov.site"])
+  for_each    = toset(["ec2.snyatkov.site", "docker.snyatkov.site", "lambda.snyatkov.site"])
   record_name = each.key
 }
 

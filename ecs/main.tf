@@ -33,6 +33,14 @@ resource "aws_ecs_task_definition" "ecs_service" {
     name      = "demo-ecs"
     image     = "984547102228.dkr.ecr.eu-north-1.amazonaws.com/demo1:v2"
     essential = true
+    logConfiguration : {
+      logDriver : "awslogs",
+      options : {
+        awslogs-region : "eu-north-1",
+        awslogs-stream-prefix : "demo_ecs",
+        awslogs-group : "demo_ecs_cloudwatch"
+      }
+    },
     portMappings = [{
       protocol      = "tcp"
       containerPort = 80
@@ -78,4 +86,14 @@ resource "aws_ecs_service" "demo_ecs_service" {
 
 resource "aws_ecs_cluster" "demo_ecs" {
   name = "demo_ecs"
+}
+
+resource "aws_cloudwatch_log_group" "demo_ecs_cloudwatch" {
+  name = "demo_ecs_cloudwatch"
+  tags = {
+    Name        = "Cloudwatch_for_demo_ecs"
+    Owner       = "Snyatkov_V"
+    Environment = "Production"
+    Project     = "Demo-ecs"
+  }
 }

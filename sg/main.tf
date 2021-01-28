@@ -63,10 +63,10 @@ resource "aws_security_group" "SG_for_ecs" {
   name   = "allow-all-ec2-ecs"
   vpc_id = var.vpc_id
   ingress {
-    from_port       = 80
-    to_port         = 80
-    protocol        = "tcp"
-    security_groups = [aws_security_group.SG_for_ALB.id]
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = var.vpc_cidr
   }
   egress {
     from_port   = 0
