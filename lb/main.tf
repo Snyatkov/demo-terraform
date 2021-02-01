@@ -36,7 +36,7 @@ resource "aws_lb_target_group" "TG_for_ecs" {
   deregistration_delay = 10
   health_check {
     healthy_threshold   = "3"
-    interval            = "90"
+    interval            = "300"
     protocol            = "HTTP"
     matcher             = "200-299"
     timeout             = "20"

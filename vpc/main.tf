@@ -1,23 +1,20 @@
+data "aws_availability_zones" "available" {
+  state = "available"
+}
+
 resource "aws_vpc" "Demo_site_vpc" {
   cidr_block       = var.vpc_cidr
   instance_tenancy = "default"
   tags             = merge(var.common_tags, { Name = "${var.common_tags["Environment"]} demo vpc" })
 }
 
-resource "aws_subnet" "Demo_site_subnet_1" {
+resource "aws_subnet" "Demo_subnets" {
+  count                   = length(var.subnets)
   vpc_id                  = aws_vpc.Demo_site_vpc.id
-  cidr_block              = "10.0.1.0/24"
-  availability_zone       = var.vpc_availible_zone[0]
+  cidr_block              = element(var.subnets, count.index)
   map_public_ip_on_launch = "true"
-  tags                    = merge(var.common_tags, { Name = "${var.common_tags["Environment"]} demo subnet 1" })
-}
-
-resource "aws_subnet" "Demo_site_subnet_2" {
-  vpc_id                  = aws_vpc.Demo_site_vpc.id
-  cidr_block              = "10.0.2.0/24"
-  availability_zone       = var.vpc_availible_zone[1]
-  map_public_ip_on_launch = "true"
-  tags                    = merge(var.common_tags, { Name = "${var.common_tags["Environment"]} demo subnet 2" })
+  availability_zone       = data.aws_availability_zones.available.names[count.index % length(data.aws_availability_zones.available.names)]
+  tags                    = merge(var.common_tags, { Name = "${var.common_tags["Environment"]} Demo subnet" })
 }
 
 resource "aws_internet_gateway" "IGW_for_demo_site_vpc" {

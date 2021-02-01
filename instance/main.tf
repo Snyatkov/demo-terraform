@@ -9,6 +9,9 @@ resource "aws_launch_configuration" "LC_for_ALB" {
     Project = "Demo-site"
   })
   key_name = "ssh_stockholm"
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_autoscaling_group" "ASG_for_ALB" {

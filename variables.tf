@@ -6,3 +6,8 @@ variable "common_tags" {
     Project     = "Demo"
   }
 }
+
+variable "subnets" {
+  type    = list(any)
+  default = ["10.0.10.0/24", "10.0.11.0/24", "10.0.12.0/24"]
+}
