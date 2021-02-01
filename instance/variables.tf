@@ -12,3 +12,4 @@ variable "lb_tg_arn" {
 variable "common_tags" {
   type = map(any)
 }
+variable "instance_type" {}

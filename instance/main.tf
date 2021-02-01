@@ -2,7 +2,7 @@
 resource "aws_launch_configuration" "LC_for_ALB" {
   name_prefix     = "EC2-LC-Demo-site-"
   image_id        = var.ami_id
-  instance_type   = "t3.micro"
+  instance_type   = var.instance_type
   security_groups = var.ec2_security_id
   user_data = templatefile("user_data.tpl", {
     Owner   = "Snyatkov_V",

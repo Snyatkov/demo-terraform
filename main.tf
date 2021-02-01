@@ -50,7 +50,7 @@ data "aws_ami" "Amazon_ecs" {
 }
 
 data "aws_acm_certificate" "issued" {
-  domain   = "*.snyatkov.site"
+  domain   = var.DN_ssl
   statuses = ["ISSUED"]
 }
 
@@ -74,12 +74,13 @@ module "instance" {
   subnets         = module.vpc.subnets.*.id
   lb_tg_arn       = [module.lb.lb_tg_arn]
   common_tags     = var.common_tags
+  instance_type   = var.instance_type
 }
 
 #----------------Create VPC-------------------------------------
 module "vpc" {
   source      = "./vpc"
-  vpc_cidr    = "10.0.0.0/16"
+  vpc_cidr    = var.vpc_cidr
   common_tags = var.common_tags
   subnets     = var.subnets
 }
@@ -96,10 +97,10 @@ module "sg" {
 #---------------Manage route 53-------------------------------
 module "r53" {
   source      = "./r53"
-  r53_id      = "Z02027932QK6EFEPPT3W2"
+  r53_id      = var.route_53_default
   lb_dns_name = module.lb.lb_dns_name
   lb_zone_id  = module.lb.lb_zone_id
-  for_each    = toset(["ec2.snyatkov.site", "docker.snyatkov.site", "lambda.snyatkov.site"])
+  for_each    = toset(var.site_list)
   record_name = each.key
 }
 
