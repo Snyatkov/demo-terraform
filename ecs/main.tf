@@ -18,7 +18,7 @@ resource "aws_iam_role" "ecs_task_execution_role" {
 }
 
 resource "aws_iam_role_policy_attachment" "ecs_task_execution_role" {
-  role       = aws_iam_role.ecs_task_execution_role.name
+  role       = aws_tkov.iam_role.ecs_task_execution_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
@@ -31,7 +31,7 @@ resource "aws_ecs_task_definition" "ecs_service" {
   requires_compatibilities = ["FARGATE"]
   container_definitions = jsonencode([{
     name      = "demo-ecs"
-    image     = "984547102228.dkr.ecr.eu-north-1.amazonaws.com/demo1:v2"
+    image     = "984547102228.dkr.ecr.eu-north-1.amazonaws.com/demo1:v3"
     essential = true
     logConfiguration : {
       logDriver : "awslogs",
