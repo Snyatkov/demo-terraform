@@ -18,8 +18,8 @@ terraform {
 }
 #---Temp output------------------------------
 /*
-output "subnets" {
-  value = module.vpc.subnets.*.id
+output "sns_topic" {
+  value = data.aws_sns_topic.Admin_allert.arn
 }
 */
 #----------get data from AWS---------------------
@@ -49,6 +49,10 @@ data "aws_ami" "Amazon_ecs" {
   }
 }
 
+data "aws_sns_topic" "Admin_allert" {
+  name = var.sns_name_topic_admin_allert
+}
+
 data "aws_acm_certificate" "issued" {
   domain   = var.DN_ssl
   statuses = ["ISSUED"]
@@ -75,6 +79,7 @@ module "instance" {
   lb_tg_arn       = [module.lb.lb_tg_arn]
   common_tags     = var.common_tags
   instance_type   = var.instance_type
+  sns_arn_admin   = data.aws_sns_topic.Admin_allert.arn
 }
 
 #----------------Create VPC-------------------------------------

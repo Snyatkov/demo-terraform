@@ -13,3 +13,4 @@ variable "common_tags" {
   type = map(any)
 }
 variable "instance_type" {}
+variable "sns_arn_admin" {}

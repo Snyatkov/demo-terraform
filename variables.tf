@@ -40,3 +40,8 @@ variable "instance_type" {
   description = "type of EC2 instances"
   default     = "t3.micro"
 }
+
+variable "sns_name_topic_admin_allert" {
+  description = "Name of sns topic for admin allert"
+  default     = "Admin_allert"
+}
