@@ -124,3 +124,11 @@ module "ecs" {
   lb_listener_443 = module.lb.lb_listener_443
   common_tags     = var.common_tags
 }
+
+#--------------Create CodeDeploy-------------------------------
+module "codedeploy" {
+  source                      = "./codedeploy"
+  codedeploy_application_name = var.codedeploy_application_name
+  lb_name                     = module.lb.lb_name
+  autoscaling_groups          = [module.instance.ASG_for_ALB]
+}

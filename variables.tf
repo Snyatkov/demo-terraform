@@ -45,3 +45,8 @@ variable "sns_name_topic_admin_allert" {
   description = "Name of sns topic for admin allert"
   default     = "Admin_allert"
 }
+
+variable "codedeploy_application_name" {
+  description = "Name of codedeoploy applicatioon"
+  default     = "html_to_EC2"
+}

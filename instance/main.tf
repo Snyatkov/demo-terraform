@@ -1,9 +1,45 @@
+#---Create role for execudte CodeDeploy
+resource "aws_iam_role" "EC2_CodeDepoy_role_for_demo" {
+  name = "EC2_CodeDepoy_role_for_demo"
+
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "ec2.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_role_policy_attachment" "AWSEC2CodeDeployRoleAttache" {
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforAWSCodeDeploy"
+  role       = aws_iam_role.EC2_CodeDepoy_role_for_demo.name
+}
+
+resource "aws_iam_role_policy_attachment" "AWSEC2CodeDeployRoleAttache2" {
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AutoScalingNotificationAccessRole"
+  role       = aws_iam_role.EC2_CodeDepoy_role_for_demo.name
+}
+
+resource "aws_iam_instance_profile" "IAM_profile_for_EC2_demo" {
+  name = "IAM_profile_for_EC2_demo"
+  role = aws_iam_role.EC2_CodeDepoy_role_for_demo.name
+}
+
 #---Configuration for EC2 demo-site
 resource "aws_launch_configuration" "LC_for_ALB" {
-  name_prefix     = "EC2-LC-Demo-site-"
-  image_id        = var.ami_id
-  instance_type   = var.instance_type
-  security_groups = var.ec2_security_id
+  name_prefix          = "EC2-LC-Demo-site-"
+  image_id             = var.ami_id
+  instance_type        = var.instance_type
+  security_groups      = var.ec2_security_id
+  iam_instance_profile = aws_iam_instance_profile.IAM_profile_for_EC2_demo.name
   user_data = templatefile("user_data.tpl", {
     Owner   = "Snyatkov_V",
     Project = "Demo-site"
